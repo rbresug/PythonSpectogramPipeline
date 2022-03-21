@@ -2,8 +2,10 @@ import os
 import sys
 import random as rd
 
-path = "C:/Users/mshahulh/OneDrive - Intel Corporation/Desktop/AI Audio Validation Project/Input"
-path_out = "C:/Users/mshahulh/OneDrive - Intel Corporation/Desktop/AI Audio Validation Project/Output_Robot"
+
+path = "c:/tempo/06_Work/InProgess/AI_work/Audio Automation/repo/clean/PythonSpectogramPipeline/src/utils/generate_data/AiAudio/Audio Validation/Audio/Input Audio"
+
+path_out = "c:/tempo/06_Work/InProgess/AI_work/Audio Automation/repo/clean/PythonSpectogramPipeline/src/utils/generate_data/AiAudio/Audio Validation/Audio/Output_Robot"
 
 if sys.platform == 'win32':
     print("pipe-test.py, running on windows")

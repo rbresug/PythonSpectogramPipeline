@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a2fb81a4-158d-4af3-95b1-b4e8f418e6e5" name="Default Changelist" comment="" />
+    <list default="true" id="a2fb81a4-158d-4af3-95b1-b4e8f418e6e5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Audio Validation/Script/add_distortion_hard_clipp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Audio Validation/Script/add_robot.py" beforeDir="false" afterPath="$PROJECT_DIR$/Audio Validation/Script/add_robot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Audio Validation/Script/add_silence.py" beforeDir="false" afterPath="$PROJECT_DIR$/Audio Validation/Script/add_silence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Audio Validation/Script/add_spongebob.py" beforeDir="false" afterPath="$PROJECT_DIR$/Audio Validation/Script/add_spongebob.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../.." />
+  </component>
   <component name="ProjectId" id="25O6NItCkW45Oqn2Ba3HyhusmPF" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -15,13 +26,39 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Audio Validation/Script" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\tempo\06_Work\InProgess\AI_work\Audio Automation\repo\clean\PythonSpectogramPipeline\src\utils\generate_data\AiAudio\Audio Validation\Script" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\rbresug\PycharmProjects\AiAudio" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.add_robot">
+    <configuration name="add_robot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AiAudio" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Audio Validation/Script" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Audio Validation/Script/add_robot.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="add_silence" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AiAudio" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -45,6 +82,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.add_robot" />
         <item itemvalue="Python.add_silence" />
       </list>
     </recent_temporary>
@@ -63,25 +101,30 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1899" height="282" key="GridCell.Tab.0.bottom" timestamp="1645778095537">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1899" height="282" key="GridCell.Tab.0.bottom" timestamp="1647882055532">
+      <screen x="-1920" y="-78" width="1920" height="1040" />
     </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.-78.1920.1040@-1920.-78.1920.1040" timestamp="1647882055532" />
     <state width="1899" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.-78.1920.1040@0.0.1920.1040" timestamp="1645778095537" />
-    <state width="1899" height="282" key="GridCell.Tab.0.center" timestamp="1645778095537">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1899" height="282" key="GridCell.Tab.0.center" timestamp="1647882055532">
+      <screen x="-1920" y="-78" width="1920" height="1040" />
     </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.-78.1920.1040@-1920.-78.1920.1040" timestamp="1647882055532" />
     <state width="1899" height="282" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.-78.1920.1040@0.0.1920.1040" timestamp="1645778095537" />
-    <state width="1899" height="282" key="GridCell.Tab.0.left" timestamp="1645778095537">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1899" height="282" key="GridCell.Tab.0.left" timestamp="1647882055532">
+      <screen x="-1920" y="-78" width="1920" height="1040" />
     </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.-78.1920.1040@-1920.-78.1920.1040" timestamp="1647882055532" />
     <state width="1899" height="282" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.-78.1920.1040@0.0.1920.1040" timestamp="1645778095537" />
-    <state width="1899" height="282" key="GridCell.Tab.0.right" timestamp="1645778095537">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1899" height="282" key="GridCell.Tab.0.right" timestamp="1647882055532">
+      <screen x="-1920" y="-78" width="1920" height="1040" />
     </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.-78.1920.1040@-1920.-78.1920.1040" timestamp="1647882055532" />
     <state width="1899" height="282" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.-78.1920.1040@0.0.1920.1040" timestamp="1645778095537" />
-    <state x="656" y="344" key="com.intellij.ide.util.TipDialog" timestamp="1647619368702">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="-1264" y="266" key="com.intellij.ide.util.TipDialog" timestamp="1647881093429">
+      <screen x="-1920" y="-78" width="1920" height="1040" />
     </state>
+    <state x="-1264" y="266" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.-78.1920.1040@-1920.-78.1920.1040" timestamp="1647881093429" />
     <state x="656" y="344" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.-78.1920.1040@0.0.1920.1040" timestamp="1647619368702" />
   </component>
 </project>

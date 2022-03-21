@@ -1,6 +1,8 @@
 import os
 import sys
 import random as rd
+import time
+from pathlib import Path, PureWindowsPath
 
 if sys.platform == 'win32':
     print("pipe-test.py, running on windows")
@@ -25,13 +27,16 @@ if not os.path.exists(FROMNAME):
 
 print("-- Both pipes exist.  Good.")
 
-TOFILE = open(TONAME, 'w')
+time.sleep(1)
+TOFILE = open(TONAME, 'wt+')
 print("-- File to write to has been opened")
+time.sleep(1)
 FROMFILE = open(FROMNAME, 'rt')
 print("-- File to read from has now been opened too\r\n")
 
-path = "C:/Users/mshahulh/OneDrive - Intel Corporation/Desktop/AI Audio Validation Project/Input"
-path_out = "C:/Users/mshahulh/OneDrive - Intel Corporation/Desktop/AI Audio Validation Project/Output_RandomSilence"
+path = "c:/tempo/06_Work/InProgess/AI_work/Audio Automation/repo/clean/PythonSpectogramPipeline/src/utils/generate_data/AiAudio/Audio Validation/Audio/Input Audio"
+
+path_out = "c:/tempo/06_Work/InProgess/AI_work/Audio Automation/repo/clean/PythonSpectogramPipeline/src/utils/generate_data/AiAudio/Audio Validation/Audio/Output Silence"
 
 def send_command(command):
     """Send a single command."""
@@ -85,12 +90,12 @@ def main():
     x = os.listdir(path)
     print(len(x))       
     for y in range(31):
-        temp_str = 'Import2: Filename="C:/Users/mshahulh/OneDrive - Intel Corporation/Desktop/AI Audio Validation Project/audio/30sec.wav"'
+        temp_str = 'Import2: Filename="c:/tempo/06_Work/InProgess/AI_work/Audio Automation/repo/clean/PythonSpectogramPipeline/src/utils/generate_data/AiAudio/Audio Validation/Audio/Input Audio/30sec.wav"'
         print("temp_str is,", temp_str)
         do_command(temp_str)
         generate_rand()
         do_command('SelectAll:')
-        temp_stri = 'Export2: Filename="C:/Users/mshahulh/OneDrive - Intel Corporation/Desktop/AI Audio Validation Project/30_sec_silence/{}.wav'.format(y)
+        temp_stri = 'Export2: Filename="c:/tempo/06_Work/InProgess/AI_work/Audio Automation/repo/clean/PythonSpectogramPipeline/src/utils/generate_data/AiAudio/Audio Validation/Audio/Output Silence/Audio{}.wav"'.format(y)
         do_command(temp_stri)
         do_command('RemoveTracks:')
 
