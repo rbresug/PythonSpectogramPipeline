@@ -8,8 +8,8 @@ from scipy.stats import skew
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
 def extract_features(y,sr=22050,n_fft=1024,hop_length=512):
-    features = {#'centroid': librosa.feature.spectral_centroid(y, sr=sr, n_fft=n_fft, hop_length=hop_length).ravel(),
-                #'flux': librosa.onset.onset_strength(y=y, sr=sr).ravel(),
+    features = {'centroid': librosa.feature.spectral_centroid(y, sr=sr, n_fft=n_fft, hop_length=hop_length).ravel(),
+                'flux': librosa.onset.onset_strength(y=y, sr=sr).ravel(),
                 'rmse': librosa.feature.rms(y, frame_length=n_fft, hop_length=hop_length).ravel(),
                 'zcr': librosa.feature.zero_crossing_rate(y, frame_length=n_fft, hop_length=hop_length).ravel(),
                 'contrast': librosa.feature.spectral_contrast(y, sr=sr).ravel(),
