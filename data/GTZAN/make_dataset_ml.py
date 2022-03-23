@@ -80,5 +80,12 @@ def make_test_data():
     df.to_csv('test_data.csv',index=False)
 
 if __name__=='__main__':
+    #ToDo insert feature of introducing distortions
+    #Blues = random silence
+    # Classical = Clicks and pops
+    # Country = Discontinuity
+    # Disco = Hum introduction
+    # hiphop  = Inter-sample peaks 
+
     make_train_data()
     make_test_data()
