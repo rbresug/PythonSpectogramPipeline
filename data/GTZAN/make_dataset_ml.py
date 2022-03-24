@@ -5,6 +5,35 @@ import numpy as np
 import librosa
 from scipy.stats import kurtosis
 from scipy.stats import skew
+from IPython.display import Audio
+
+from essentia.standard import MonoLoader, MonoWriter, DiscontinuityDetector, FrameGenerator
+from essentia import array
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def generate_discontinuity(audio_file):
+
+    plt.rcParams["figure.figsize"] = (12, 9)
+
+    sr = 22050
+
+    audio = MonoLoader(filename=audio_file)()
+
+    jump_starts = np.array([len(audio) // 4, len(audio) // 2])
+    ground_truth = jump_starts / sr
+
+    for start in jump_starts:
+        l_amp = audio[start]
+        # Remove samples until the jump produces a prominent discontinuity so it can be perceived.
+        end = next(
+            idx for idx, r_amp in enumerate(audio[start:], start) if abs(r_amp - l_amp) > 0.3
+        )
+        audio = np.delete(audio, range(start, end))
+    MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+
+
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
 def extract_features(y,sr=22050,n_fft=1024,hop_length=512):
@@ -60,8 +89,25 @@ def make_train_data():
     print(df.head())
     print(df.shape)
     os.chdir('..')
+    df.to_csv('train_data.csv',index=False)
+
+def make_distortion_data():
+    arr_features=[]
+    os.chdir('genres')
+    #os.chdir('train')
+    genres = 'blues'.split()
+    for idx,genre in tqdm(enumerate(genres),total=len(genres)):
+        for fname in os.listdir(genre):
+
+            #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
+            generate_discontinuity(genre+'/'+fname)
+
+    df=pd.DataFrame(data=arr_features)
+    print(df.head())
+    print(df.shape)
     os.chdir('..')
     df.to_csv('train_data.csv',index=False)
+
 
 def make_test_data():
     arr_features=[]
@@ -86,6 +132,6 @@ if __name__=='__main__':
     # Country = Discontinuity
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
-
+    make_distortion_data()
     make_train_data()
     make_test_data()
