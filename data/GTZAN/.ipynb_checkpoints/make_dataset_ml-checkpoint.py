@@ -16,11 +16,9 @@ import random as rd
 
 def generate_discontinuity(audio_file):
 
-    plt.rcParams["figure.figsize"] = (12, 9)
-
-    sr = 44100
-
-    audio = MonoLoader(filename=audio_file)()
+    sr = 22050
+    #25/03/22 mshahulh: added sampleRate paramter on MonoLoader or esle MonoLoader will assume audio sample rate is 44100Hz
+    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
 
     jump_starts = np.array([len(audio) // 4, len(audio) // 2])
     ground_truth = jump_starts / sr
@@ -34,17 +32,6 @@ def generate_discontinuity(audio_file):
         audio = np.delete(audio, range(start, end))
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
-def generate_randomsilence(audio_file):
-    audio = MonoLoader(filename=audio_file)()
-    sr = 22050
-    time_axis = np.arange(len(audio)) / sr
-    gap_position = 15
-    gap_duration = 0.5
-    gap_start = gap_position * sr
-    gap_end = int(gap_start + gap_duration * sr)
-    print(gap_duration * sr)
-    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
-    MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 #25/3/22 mshahulh
 def generate_click_n_pops(audio_file):
     sr = 22050
@@ -153,17 +140,18 @@ def make_distortion_data():
     arr_features=[]
     os.chdir('genres')
     #os.chdir('train')
-    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    genres = 'blues'.split()
     for idx,genre in tqdm(enumerate(genres),total=len(genres)):
-        if genre == 'blues': #ToDo complete this list
-            for fname in os.listdir(genre):
-                generate_randomsilence(genre+'/'+fname)        
-        if genre == 'country':
-            for fname in os.listdir(genre):
+        for fname in os.listdir(genre):
 
-                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-                generate_discontinuity(genre+'/'+fname)
+            #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
+            generate_discontinuity(genre+'/'+fname)
 
+    df=pd.DataFrame(data=arr_features)
+    print(df.head())
+    print(df.shape)
+    os.chdir('..')
+    df.to_csv('train_data.csv',index=False)
 
 
 def make_test_data():
