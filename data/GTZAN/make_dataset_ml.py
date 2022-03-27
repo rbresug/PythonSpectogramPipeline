@@ -89,7 +89,7 @@ def generate_hum(audio_file):
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
     
-def generate_interpeak(audio_file)
+#todo def generate_interpeak(audio_file)
     
 
 #23/03/22 RBresug:
@@ -158,12 +158,21 @@ def make_distortion_data():
         if genre == 'blues': #ToDo complete this list
             for fname in os.listdir(genre):
                 generate_randomsilence(genre+'/'+fname)        
+        if genre == 'classical':
+            for fname in os.listdir(genre):
+
+                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
+                generate_click_n_pops(genre+'/'+fname)
         if genre == 'country':
             for fname in os.listdir(genre):
 
                 #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
                 generate_discontinuity(genre+'/'+fname)
+        if genre == 'disco':
+            for fname in os.listdir(genre):
 
+                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
+                generate_discontinuity(genre+'/'+fname)
 
 
 def make_test_data():
@@ -189,6 +198,6 @@ if __name__=='__main__':
     # Country = Discontinuity
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
-    make_distortion_data()
-    make_train_data()
+    #make_distortion_data()
+    #make_train_data()
     make_test_data()
