@@ -6,11 +6,12 @@ data:
 
 Step 3: in training dataset, delete 10% of the first files
 cd genres
-find . ! -name '*0000*.wav' -delete
+find . -name '*0000*.wav' -delete
+
 
 Step 4: in test dataset, delete 90% of the  files
 cd test
-find . -name '*0000*.wav' -delete
+find . ! -name '*0000*.wav' -delete
 
 Finally the structure will look like this:
 
