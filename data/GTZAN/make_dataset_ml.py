@@ -18,9 +18,9 @@ def generate_discontinuity(audio_file):
 
     plt.rcParams["figure.figsize"] = (12, 9)
 
-    sr = 44100
+    sr = 22050
 
-    audio = MonoLoader(filename=audio_file)()
+    audio = MonoLoader(filename=audio_file, sampleRate =sr)()
 
     jump_starts = np.array([len(audio) // 4, len(audio) // 2])
     ground_truth = jump_starts / sr
@@ -35,16 +35,19 @@ def generate_discontinuity(audio_file):
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence(audio_file):
-    audio = MonoLoader(filename=audio_file)()
+    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
     sr = 22050
+    
     time_axis = np.arange(len(audio)) / sr
-    gap_position = 15
+    gap_position = rd.randint(2,28)
     gap_duration = 0.5
     gap_start = gap_position * sr
     gap_end = int(gap_start + gap_duration * sr)
     print(gap_duration * sr)
+    
     audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+
 #25/3/22 mshahulh
 def generate_click_n_pops(audio_file):
     sr = 22050
@@ -88,9 +91,33 @@ def generate_hum(audio_file):
     audio_with_hum = audio + hum
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
+#28/3/2022 mshahulh
+def generate_white_noise(audio_file):
     
-#todo def generate_interpeak(audio_file)
+    sr = 22050
     
+    audio = MonoLoader(filename= audio_file, sampleRate= sr)()
+    audio *= db2amp(audio_db)
+    
+    noise_only = 1
+
+    audio_db = -10
+    noise_db = -60
+
+    time = np.arange(len(time))
+    
+    noise = np.random.randn(len(time)).astype(np.float32)
+    noise *= db2amp(noise_db)
+
+    audio_power = instantPower(audio)
+    noise_power = instantPower(noise)
+    true_snr = 10 * np.log10( audio_power / noise_power)
+
+    print('audio level: {:.2f}dB'.format(10. * np.log10(audio_power)))
+    print('Noise level: {:.2f}dB'.format(10. * np.log10(noise_power)))
+    print('SNR: {:.2f}dB'.format(true_snr))
+
+    MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(audio + noise)
 
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
@@ -155,8 +182,10 @@ def make_distortion_data():
     #os.chdir('train')
     genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
     for idx,genre in tqdm(enumerate(genres),total=len(genres)):
+        
         if genre == 'blues': #ToDo complete this list
             for fname in os.listdir(genre):
+                
                 generate_randomsilence(genre+'/'+fname)        
         if genre == 'classical':
             for fname in os.listdir(genre):
@@ -172,8 +201,11 @@ def make_distortion_data():
             for fname in os.listdir(genre):
 
                 #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-                generate_discontinuity(genre+'/'+fname)
-
+                generate_hum(genre+'/'+fname)
+        if genre == 'hiphop':
+            for fname in os.listdir(genre):
+                
+                generate_white_noise(genre+'/'+fname)
 
 def make_test_data():
     arr_features=[]
