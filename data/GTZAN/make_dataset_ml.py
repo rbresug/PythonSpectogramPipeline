@@ -6,9 +6,10 @@ import librosa
 from scipy.stats import kurtosis
 from scipy.stats import skew
 from IPython.display import Audio
+import shutil
 
-from essentia.standard import MonoLoader, MonoWriter, DiscontinuityDetector, FrameGenerator
-from essentia import array
+# from essentia.standard import MonoLoader, MonoWriter, DiscontinuityDetector, FrameGenerator
+# from essentia import array
 import matplotlib.pyplot as plt
 import numpy as np
 import random as rd
@@ -226,6 +227,7 @@ def make_test_data():
 #30/03/22 ahmadbad:
 #define the source audio and destination location  
 def split_data():
+   def split_data():
     os.chdir('genres\\genres') #local path for audio file (source audio)
     dirName = r"C:\Ai_audio\genres\genres\test\\" #local path for test file (destination audio)
     genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
@@ -233,16 +235,19 @@ def split_data():
     for idx,genre in tqdm(enumerate(genres),total=len(genres)):
         for i,fname in enumerate(os.listdir(genre)):
             audioname = (genre + "\\" + fname)   
-            if i <= 10:
+            if i <= 10: #split for test file
                 print("inside loop: " + audioname)
+                testfile = dirName + genre
                 try:
                     # Create target Directory
-                    os.mkdir(dirName)
+                    print(dirName + genre)
+                    os.makedirs(testfile)
                     print("Directory " , dirName ,  " Created ") 
                 except FileExistsError:
                     print("Directory " , dirName ,  " already exists")
-                shutil.move(audioname, dirName+fname)
-            else:
+                shutil.move(audioname, testfile+"\\"+fname)
+            else: #split for train data
+                # print("outside loop: " +audioname)
                 print("outside loop: " +audioname)
 
 if __name__=='__main__':
@@ -254,5 +259,5 @@ if __name__=='__main__':
     # hiphop  = Inter-sample peaks 
     #make_distortion_data()
     #make_train_data()
-    make_test_data()
-    #split_data
+    # make_test_data()
+    split_data()
