@@ -223,6 +223,28 @@ def make_test_data():
     os.chdir('..')
     df.to_csv('test_data.csv',index=False)
 
+#30/03/22 ahmadbad:
+#define the source audio and destination location  
+def split_data():
+    os.chdir('genres\\genres') #local path for audio file (source audio)
+    dirName = r"C:\Ai_audio\genres\genres\test\\" #local path for test file (destination audio)
+    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    # genres = 'blues'.split()
+    for idx,genre in tqdm(enumerate(genres),total=len(genres)):
+        for i,fname in enumerate(os.listdir(genre)):
+            audioname = (genre + "\\" + fname)   
+            if i <= 10:
+                print("inside loop: " + audioname)
+                try:
+                    # Create target Directory
+                    os.mkdir(dirName)
+                    print("Directory " , dirName ,  " Created ") 
+                except FileExistsError:
+                    print("Directory " , dirName ,  " already exists")
+                shutil.move(audioname, dirName+fname)
+            else:
+                print("outside loop: " +audioname)
+
 if __name__=='__main__':
     #ToDo insert feature of introducing distortions
     #Blues = random silence
@@ -233,3 +255,4 @@ if __name__=='__main__':
     #make_distortion_data()
     #make_train_data()
     make_test_data()
+    #split_data
