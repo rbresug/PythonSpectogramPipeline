@@ -192,7 +192,70 @@ def make_train_data():
     os.chdir('..')
     df.to_csv('train_data.csv',index=False)
 
-def make_train_data():
+def make_train_data_column():
+    x_train=[]
+    x_test=[]
+    y_train=[]
+    y_test=[]
+    arr_features=[]
+    cd = os.getcwd()
+    print ("curdir", cd)
+    os.chdir('genres')
+    #os.chdir('train')
+    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    #genres = 'blues'.split()
+    for idx,genre in tqdm(enumerate(genres),total=len(genres)):
+        for fname in os.listdir(genre):
+            #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
+            y, sr = librosa.load(genre+'/'+fname, duration=10)
+            mfccs = np.mean(librosa.feature.mfcc(y, sr, n_mfcc=36).T,axis=0)
+            melspectrogram = np.mean(librosa.feature.melspectrogram(y=y, sr=sr, n_mels=36,fmax=8000).T,axis=0)
+            chroma_stft=np.mean(librosa.feature.chroma_stft(y=y, sr=sr,n_chroma=36).T,axis=0)
+            chroma_cq = np.mean(librosa.feature.chroma_cqt(y=y, sr=sr,n_chroma=36).T,axis=0)
+            chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr,n_chroma=36).T,axis=0)
+            features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens)),(36,5))
+            x_train.append(features)
+            y_train.append(idx)
+
+    x_train=np.array(x_train)
+
+    y_train=np.array(y_train)
+
+    x_train_2d=np.reshape(x_train,(x_train.shape[0],x_train.shape[1]*x_train.shape[2]))
+    os.chdir('..')
+    np.savetxt("train_data.csv", x_train_2d, delimiter=",")
+    np.savetxt("train_labels.csv",y_train,delimiter=",")
+
+def make_test_data_column():
+    x_test=[]
+    y_test=[]
+    arr_features=[]
+    os.chdir('genres')
+    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    for fnamed in tqdm(os.listdir('test'),total=10*len(genres)):
+        for fname in os.listdir('test/'+fnamed):
+            print('test/'+ fnamed +'/'+fname)
+            y, sr = librosa.load('test/'+ fnamed +'/'+fname, duration=30)
+            mfccs = np.mean(librosa.feature.mfcc(y, sr, n_mfcc=36).T,axis=0)
+            melspectrogram = np.mean(librosa.feature.melspectrogram(y=y, sr=sr, n_mels=36,fmax=8000).T,axis=0)
+            chroma_stft=np.mean(librosa.feature.chroma_stft(y=y, sr=sr,n_chroma=36).T,axis=0)
+            chroma_cq = np.mean(librosa.feature.chroma_cqt(y=y, sr=sr,n_chroma=36).T,axis=0)
+            chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr,n_chroma=36).T,axis=0)
+            features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens)),(36,5))
+            x_test.append(features)
+            print("index", genres.index(fname.split('.')[0]))
+            y_test.append(genres.index(fname.split('.')[0]))
+
+    x_test=np.array(x_test)
+    y_test=np.array(y_test)
+
+    x_test_2d=np.reshape(x_test,(x_test.shape[0],x_test.shape[1]*x_test.shape[2]))
+    os.chdir('..')
+    np.savetxt("test_data.csv",x_test_2d,delimiter=",")
+    np.savetxt("test_labels.csv",y_test,delimiter=",")
+
+
+def make_train_data_orig():
     arr_features=[]
     cd = os.getcwd()
     print ("curdir", cd)
@@ -265,6 +328,8 @@ def make_test_data():
     os.chdir('..')
     df.to_csv('test_data.csv',index=False)
 
+
+
 if __name__=='__main__':
     #ToDo insert feature of introducing distortions
     #Blues = random silence
@@ -273,5 +338,5 @@ if __name__=='__main__':
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
     #make_distortion_data()
-    make_train_data()
-    make_test_data()
+    make_train_data_column()
+    make_test_data_column()
