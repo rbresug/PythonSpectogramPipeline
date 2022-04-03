@@ -35,12 +35,87 @@ def generate_discontinuity(audio_file):
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence(audio_file):
-    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
     sr = 22050
+    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+    
     
     time_axis = np.arange(len(audio)) / sr
     gap_position = rd.randint(2,28)
     gap_duration = 0.5
+    gap_start = gap_position * sr
+    gap_end = int(gap_start + gap_duration * sr)
+    print(gap_duration * sr)
+    
+    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
+    MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+
+def generate_randomsilence2(audio_file):
+    sr = 22050
+    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+    
+    
+    time_axis = np.arange(len(audio)) / sr
+    gap_position = rd.randint(2,28)
+    gap_duration = 2
+    gap_start = gap_position * sr
+    gap_end = int(gap_start + gap_duration * sr)
+    print(gap_duration * sr)
+    
+    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
+    gap_position = rd.randint(2,28)
+    gap_duration = 2
+    gap_start = gap_position * sr
+    gap_end = int(gap_start + gap_duration * sr)
+    print(gap_duration * sr)
+    
+    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
+
+    gap_position = rd.randint(2,28)
+    gap_duration = 2
+    gap_start = gap_position * sr
+    gap_end = int(gap_start + gap_duration * sr)
+    print(gap_duration * sr)
+    
+    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
+
+    MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+
+def generate_randomsilence3(audio_file):
+    sr = 22050
+    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+    
+    
+    time_axis = np.arange(len(audio)) / sr
+    gap_position = rd.randint(2,28)
+    gap_duration = 4
+    gap_start = gap_position * sr
+    gap_end = int(gap_start + gap_duration * sr)
+    print(gap_duration * sr)
+    
+    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
+    MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+
+def generate_randomsilence4(audio_file):
+    sr = 22050
+    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+    
+    time_axis = np.arange(len(audio)) / sr
+    gap_position = rd.randint(2,28)
+    gap_duration = 6
+    gap_start = gap_position * sr
+    gap_end = int(gap_start + gap_duration * sr)
+    print(gap_duration * sr)
+    
+    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
+    MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+
+def generate_randomsilence5(audio_file):
+    sr = 22050
+    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+       
+    time_axis = np.arange(len(audio)) / sr
+    gap_position = rd.randint(2,28)
+    gap_duration = 10
     gap_start = gap_position * sr
     gap_end = int(gap_start + gap_duration * sr)
     print(gap_duration * sr)
@@ -63,7 +138,7 @@ def generate_click_n_pops(audio_file):
     click_locs = [
         len(audio) // rand_length[0],
         len(audio) // rand_length[1],
-        len(audio) * 3 // rand_length[3]
+        len(audio) * 3 // rand_length[2]
                  ]
     for click_loc, amp in zip(click_locs, [.5, .15, .05]):
         audio[click_loc] += amp
@@ -118,6 +193,33 @@ def generate_white_noise(audio_file):
     print('SNR: {:.2f}dB'.format(true_snr))
 
     MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(audio + noise)
+def generate_white_noise2(audio_file):
+    
+    sr = 22050
+    
+    audio = MonoLoader(filename= audio_file, sampleRate= sr)()
+    audio *= db2amp(audio_db)
+    
+    noise_only = 1
+
+    audio_db = -10
+    noise_db = -120
+
+    time = np.arange(len(time))
+    
+    noise = np.random.randn(len(time)).astype(np.float32)
+    noise *= db2amp(noise_db)
+
+    audio_power = instantPower(audio)
+    noise_power = instantPower(noise)
+    true_snr = 10 * np.log10( audio_power / noise_power)
+
+    print('audio level: {:.2f}dB'.format(10. * np.log10(audio_power)))
+    print('Noise level: {:.2f}dB'.format(10. * np.log10(noise_power)))
+    print('SNR: {:.2f}dB'.format(true_snr))
+
+    MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(audio + noise)
+
 
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
@@ -309,8 +411,22 @@ def make_distortion_data():
                 generate_hum(genre+'/'+fname)
         if genre == 'hiphop':
             for fname in os.listdir(genre):
-                
-                generate_white_noise(genre+'/'+fname)
+                generate_white_noise2(genre+'/'+fname)
+        if genre == 'jazz':
+            for fname in os.listdir(genre):
+                generate_randomsilence(genre+'/'+fname) 
+        if genre == 'metal':
+            for fname in os.listdir(genre):
+                generate_randomsilence2(genre+'/'+fname) 
+        if genre == 'pop':
+            for fname in os.listdir(genre):
+                generate_randomsilence3(genre+'/'+fname) 
+        if genre == 'reggae':
+            for fname in os.listdir(genre):
+                generate_randomsilence4(genre+'/'+fname) 
+        if genre == 'rock':
+            for fname in os.listdir(genre):
+                generate_randomsilence5(genre+'/'+fname)         
 
 def make_test_data():
     arr_features=[]
@@ -337,6 +453,6 @@ if __name__=='__main__':
     # Country = Discontinuity
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
-    #make_distortion_data()
-    make_train_data_column()
-    make_test_data_column()
+    make_distortion_data()
+    #make_train_data_column()
+    #make_test_data_column()
