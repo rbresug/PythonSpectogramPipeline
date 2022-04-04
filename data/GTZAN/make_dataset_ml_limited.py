@@ -153,6 +153,27 @@ def generate_click_n_pops(audio_file):
         audio[click_loc] += amp
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+#25/3/22 mshahulh
+def generate_hum2(audio_file):
+    
+    sr = 44100
+    
+    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+
+    # Generate a 100Hz tone.
+    time = np.arange(len(audio)) / sr
+    freq = 100
+    hum = np.sin(2 * np.pi * freq * time).astype(np.float32)
+
+    # Add odd harmonics via clipping.
+    hum = Clipper(min=-0.5, max=0.5)(hum)
+
+    # Attenuate the hum 30 dB.
+    hum *= db2amp(-30)
+
+    audio_with_hum = audio + hum
+    
+    MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
 
 #25/3/22 mshahulh
 def generate_hum(audio_file):
@@ -163,7 +184,7 @@ def generate_hum(audio_file):
 
     # Generate a 50Hz tone.
     time = np.arange(len(audio)) / sr
-    freq = 50
+    freq = 30
     hum = np.sin(2 * np.pi * freq * time).astype(np.float32)
 
     # Add odd harmonics via clipping.
@@ -177,10 +198,10 @@ def generate_hum(audio_file):
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
 #28/3/2022 mshahulh
 def generate_white_noise(audio_file):
-    time = 5  # s   
+    time = 25  # s   
     sr = 44100
     audio_db = -10
-    noise_db = -60
+    noise_db = -95
     audio = MonoLoader(filename= audio_file, sampleRate= sr)()
     audio *= db2amp(audio_db)
     
@@ -200,14 +221,19 @@ def generate_white_noise(audio_file):
     print('audio level: {:.2f}dB'.format(10. * np.log10(audio_power)))
     print('Noise level: {:.2f}dB'.format(10. * np.log10(noise_power)))
     print('SNR: {:.2f}dB'.format(true_snr))
-
-    MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(audio + noise)
+    if len(audio) < len(noise):
+        c = noise.copy()
+        c[:len(audio)] += audio
+    else:
+        c = audio.copy()
+        c[:len(noise)] += noise
+    MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(c)
 def generate_white_noise2(audio_file):
     
     sr = 44100
-    time = 5  # s
+    time = 25  # s
     audio_db = -10
-    noise_db = -120
+    noise_db = -80
     audio = MonoLoader(filename= audio_file, sampleRate= sr)()
     audio *= db2amp(audio_db)
     
@@ -325,7 +351,7 @@ def make_train_data_column():
     for idx,genre in tqdm(enumerate(genres),total=len(genres)):
         for fname in os.listdir(genre):
             #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-            y, sr = librosa.load(genre+'/'+fname, duration=10)
+            y, sr = librosa.load(genre+'/'+fname, duration=30)
             mfccs = np.mean(librosa.feature.mfcc(y, sr, n_mfcc=36).T,axis=0)
             melspectrogram = np.mean(librosa.feature.melspectrogram(y=y, sr=sr, n_mels=36,fmax=8000).T,axis=0)
             chroma_stft=np.mean(librosa.feature.chroma_stft(y=y, sr=sr,n_chroma=36).T,axis=0)
@@ -361,8 +387,8 @@ def make_test_data_column():
             chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr,n_chroma=36).T,axis=0)
             features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens)),(36,5))
             x_test.append(features)
-            print("index", genres.index(fname.split('.')[0]))
-            y_test.append(genres.index(fname.split('.')[0]))
+            print("index", genres.index(fnamed.split('.')[0]))
+            y_test.append(genres.index(fnamed.split('.')[0]))
 
     x_test=np.array(x_test)
     y_test=np.array(y_test)
@@ -406,32 +432,32 @@ def make_distortion_data():
     genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
     for idx,genre in tqdm(enumerate(genres),total=len(genres)):
         
-        # if genre == 'blues': #ToDo complete this list
-        #     for fname in os.listdir(genre):
+        if genre == 'blues': #ToDo complete this list
+            for fname in os.listdir(genre):
                 
-        #         generate_randomsilence(genre+'/'+fname)        
-        # if genre == 'classical':
-        #     for fname in os.listdir(genre):
+                generate_randomsilence(genre+'/'+fname)        
+        if genre == 'classical':
+            for fname in os.listdir(genre):
 
-        #         #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-        #         generate_click_n_pops(genre+'/'+fname)
+                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
+                generate_click_n_pops(genre+'/'+fname)
         if genre == 'country':
             for fname in os.listdir(genre):
 
                 #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
                 print("d")
                 generate_discontinuity(genre+'/'+fname)
-        # if genre == 'disco':
-        #     for fname in os.listdir(genre):
+        if genre == 'disco':
+            for fname in os.listdir(genre):
 
-        #         #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-        #         generate_hum(genre+'/'+fname)
+                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
+                generate_hum(genre+'/'+fname)
         if genre == 'hiphop':
             for fname in os.listdir(genre):
                 generate_white_noise2(genre+'/'+fname)
         if genre == 'jazz':
             for fname in os.listdir(genre):
-                generate_randomsilence(genre+'/'+fname) 
+                generate_hum2(genre+'/'+fname) 
         if genre == 'metal':
             for fname in os.listdir(genre):
                 generate_randomsilence2(genre+'/'+fname) 
@@ -440,15 +466,17 @@ def make_distortion_data():
                 generate_randomsilence3(genre+'/'+fname) 
         if genre == 'reggae':
             for fname in os.listdir(genre):
-                generate_randomsilence4(genre+'/'+fname) 
+                generate_white_noise(genre+'/'+fname) 
         if genre == 'rock':
             for fname in os.listdir(genre):
-                generate_randomsilence5(genre+'/'+fname)         
+                generate_randomsilence5(genre+'/'+fname)
+    os.chdir('..')         
 
 def make_test_data():
     arr_features=[]
     os.chdir('genres')
-    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    #genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    distortions = 'gaps hums discontinuity disco hiphop jazz metal pop reggae rock'.split()
     for fname in tqdm(os.listdir('test'),total=10*len(genres)):
             y, sr = librosa.load('test/'+fname, duration=30)
             dict_features=extract_features(y=y,sr=sr)
@@ -470,6 +498,6 @@ if __name__=='__main__':
     # Country = Discontinuity
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
-    #make_distortion_data()
+    make_distortion_data()
     make_train_data_column()
     make_test_data_column()
