@@ -22,35 +22,30 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random as rd
 
+sr = 22050
 
 def generate_discontinuity(audio_file):
+    audio = MonoLoader(filename=audio_file, sampleRate=22050)()
 
-    plt.rcParams["figure.figsize"] = (12, 9)
+    jump_starts = np.array([len(audio) % 4, len(audio) % 2])
+    print("jump_starts", jump_starts)
+    ground_truth = jump_starts / sr 
+    print("ground_truth", ground_truth)
 
-    sr = 22050
-
-    audio = MonoLoader(filename=audio_file, sampleRate =sr)()
-
-    jump_starts = np.array([len(audio) // 2, len(audio) // 2])
-    ground_truth = jump_starts / sr
-
-    try:
-        for start in jump_starts:
-            l_amp = audio[start]
-            # Remove samples until the jump produces a prominent discontinuity so it can be perceived.
-            end = next(
-                idx for idx, r_amp in enumerate(audio[start:], start) if abs(r_amp - l_amp) > 0.3
-            )
-            audio = np.delete(audio, range(start, end))
-    except StopIteration:
-        pass
+    for start in jump_starts:
+        l_amp = audio[start]
+        print("l_amp",l_amp)
+        # Remove samples until the jump produces a prominent discontinuity so it can be perceived.
+        end = next(
+        idx for idx, r_amp in enumerate(audio[start:], start) if abs(r_amp - l_amp) > 0.3       
+)
+        audio = np.delete(audio, range(start, end))
+    
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence(audio_file):
-    sr = 44100
-    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
-    
-    
+    audio = MonoLoader(filename=audio_file, sampleRate=22050)()
+       
     time_axis = np.arange(len(audio)) / sr
     gap_position = rd.randint(2,28)
     gap_duration = 0.5
@@ -62,10 +57,8 @@ def generate_randomsilence(audio_file):
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence2(audio_file):
-    sr = 44100
-    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
-    
-    
+    audio = MonoLoader(filename=audio_file, sampleRate=22050)()
+
     time_axis = np.arange(len(audio)) / sr
     gap_position = rd.randint(2,25)
     gap_duration = 0.8
@@ -93,8 +86,7 @@ def generate_randomsilence2(audio_file):
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence3(audio_file):
-    sr = 44100
-    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+    audio = MonoLoader(filename=audio_file, sampleRate=22050)()
     
     
     time_axis = np.arange(len(audio)) / sr
@@ -105,11 +97,11 @@ def generate_randomsilence3(audio_file):
     print(gap_duration * sr)
     
     audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
+    
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence4(audio_file):
-    sr = 44100
-    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+    audio = MonoLoader(filename=audio_file, sampleRate=22050)()
     
     time_axis = np.arange(len(audio)) / sr
     gap_position = rd.randint(2,20)
@@ -119,10 +111,10 @@ def generate_randomsilence4(audio_file):
     print(gap_duration * sr)
     
     audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
+    
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence5(audio_file):
-    sr = 44100
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
        
     time_axis = np.arange(len(audio)) / sr
@@ -135,31 +127,29 @@ def generate_randomsilence5(audio_file):
     audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
-#25/3/22 mshahulh
 def generate_click_n_pops(audio_file):
-    sr = 44100
-
-    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+    audio = MonoLoader(filename=audio_file, sampleRate=22050)()
     
-    # I purposely generate random int between 2 - 5 to varies the location of the click n pops in the audio
     rand_length = []
     for x in range(3):
         y = rd.randint(2,5)
         rand_length.append(y)
         
     click_locs = [len(audio) // 4,    len(audio) // 2,    len(audio) * 3 // 4]
+    
+    rand_amp = []
+    for a in range(3):
+        z = round(rd.uniform(.05, .8),2)
+        rand_amp.append(z)
 
-    for click_loc, amp in zip(click_locs, [.5, .15, .05]):#
+    for click_loc, amp in zip(click_locs, [rand_amp[0], rand_amp[1], rand_amp[2]]):
         audio[click_loc] += amp
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
-#25/3/22 mshahulh
-def generate_hum2(audio_file):
-    
-    sr = 44100
-    
-    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
 
+def generate_hum2(audio_file):
+    audio = MonoLoader(filename=audio_file, sampleRate=22050)()
+    
     # Generate a 100Hz tone.
     time = np.arange(len(audio)) / sr
     freq = 100
@@ -175,12 +165,8 @@ def generate_hum2(audio_file):
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
 
-#25/3/22 mshahulh
 def generate_hum(audio_file):
-    
-    sr = 44100
-    
-    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+    audio = MonoLoader(filename=audio_file, sampleRate=22050)()
 
     # Generate a 50Hz tone.
     time = np.arange(len(audio)) / sr
@@ -196,18 +182,15 @@ def generate_hum(audio_file):
     audio_with_hum = audio + hum
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
-#28/3/2022 mshahulh
-def generate_white_noise(audio_file):
-    time = 25  # s   
-    sr = 44100
+
+def generate_white_noise(audio_file): 
+    time = 30  # s   
     audio_db = -10
     noise_db = -95
-    audio = MonoLoader(filename= audio_file, sampleRate= sr)()
+    audio = MonoLoader(filename= audio_file, sampleRate=22050)()
     audio *= db2amp(audio_db)
     
     noise_only = 1
-
-
 
     time = np.arange(sr * time) / sr
     
@@ -227,14 +210,13 @@ def generate_white_noise(audio_file):
     else:
         c = audio.copy()
         c[:len(noise)] += noise
+    
     MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(c)
 def generate_white_noise2(audio_file):
-    
-    sr = 44100
-    time = 25  # s
+    time = 30  # s
     audio_db = -10
     noise_db = -80
-    audio = MonoLoader(filename= audio_file, sampleRate= sr)()
+    audio = MonoLoader(filename= audio_file, sampleRate=22050)()
     audio *= db2amp(audio_db)
     
     noise_only = 1
@@ -261,7 +243,6 @@ def generate_white_noise2(audio_file):
         c[:len(noise)] += noise
 
     MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(c)
-
 
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
@@ -431,26 +412,17 @@ def make_distortion_data():
     #os.chdir('train')
     genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
     for idx,genre in tqdm(enumerate(genres),total=len(genres)):
-        
         if genre == 'blues': #ToDo complete this list
             for fname in os.listdir(genre):
-                
                 generate_randomsilence(genre+'/'+fname)        
         if genre == 'classical':
             for fname in os.listdir(genre):
-
-                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
                 generate_click_n_pops(genre+'/'+fname)
         if genre == 'country':
             for fname in os.listdir(genre):
-
-                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-                print("d")
                 generate_discontinuity(genre+'/'+fname)
         if genre == 'disco':
             for fname in os.listdir(genre):
-
-                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
                 generate_hum(genre+'/'+fname)
         if genre == 'hiphop':
             for fname in os.listdir(genre):
