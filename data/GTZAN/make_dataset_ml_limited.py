@@ -98,7 +98,7 @@ def generate_randomsilence3(audio_file):
     
     
     time_axis = np.arange(len(audio)) / sr
-    gap_position = rd.randint(2,25)
+    gap_position = rd.randint(2,20)
     gap_duration = 3
     gap_start = gap_position * sr
     gap_end = int(gap_start + gap_duration * sr)
