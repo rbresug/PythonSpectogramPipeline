@@ -17,7 +17,9 @@ from keras.layers import Dropout,Activation
 from keras.models import Sequential
 import warnings
 warnings.filterwarnings('ignore')
- 
+
+#mshahulh 07/04/2022 
+import soundfile
 
 DATASET_PATH = 'C:\Ai_audio\\Audio\\'
    
@@ -179,4 +181,21 @@ AITraining(trainIn,trainOut,testIn,testOut)
 
 # pitch_scale(signal, sr, -4, "tryag","2")
 
+#07/04/2022 mshahulh
+def generate_saturated(audio_file):
+    audio, sr = librosa.load(audio_file, sr=22050, mono=True)
+    audio = audio * 5 #can try to play with the multiplier to amplify/minimize the signal
+    soundfile.write(audio_file, data=audio, samplerate=22050)
+
+def make_distortion_data():
+    arr_features=[]
+    os.chdir('genres')
+    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    for idx,genre in tqdm(enumerate(genres),total=len(genres)):
+        if genre == 'blues': #ToDo complete this list
+            for fname in os.listdir(genre):
+                generate_oversaturated(genre+'/'+fname)  
+
+if __name__=='__main__': 
+    make_distortion_data()
 
