@@ -5,7 +5,7 @@ import numpy as np
 import librosa
 from scipy.stats import kurtosis
 from scipy.stats import skew
-from IPython.display import Audio
+#from IPython.display import Audio
 from essentia import Pool, db2amp
 from essentia import array, instantPower
 from essentia.standard import MonoLoader, MonoWriter, DiscontinuityDetector, FrameGenerator
@@ -61,36 +61,19 @@ def generate_randomsilence(audio_file):
     audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
-def generate_randomsilence2(audio_file):
+def generate_undersampling(audio_file):
     sr = 44100
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
-    
-    
-    time_axis = np.arange(len(audio)) / sr
-    gap_position = rd.randint(2,25)
-    gap_duration = 0.8
-    gap_start = gap_position * sr
-    gap_end = int(gap_start + gap_duration * sr)
-    print(gap_duration * sr)
-    
-    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
-    gap_position = rd.randint(2,25)
-    gap_duration = 0.8
-    gap_start = gap_position * sr
-    gap_end = int(gap_start + gap_duration * sr)
-    print(gap_duration * sr)
-    
-    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
-
-    gap_position = rd.randint(2,25)
-    gap_duration = 0.8
-    gap_start = gap_position * sr
-    gap_end = int(gap_start + gap_duration * sr)
-    print(gap_duration * sr)
-    
-    audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
-
+    sr = sr / 2
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+
+
+def generate_oversampling(audio_file):
+    sr = 44100
+    audio = MonoLoader(filename=audio_file, sampleRate=sr)()
+    sr = sr * 2
+    MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+
 
 def generate_randomsilence3(audio_file):
     sr = 44100
@@ -200,7 +183,7 @@ def generate_hum(audio_file):
 def generate_white_noise(audio_file):
     time = 25  # s   
     sr = 44100
-    audio_db = -10
+    audio_db = -15
     noise_db = -95
     audio = MonoLoader(filename= audio_file, sampleRate= sr)()
     audio *= db2amp(audio_db)
@@ -460,10 +443,10 @@ def make_distortion_data():
                 generate_hum2(genre+'/'+fname) 
         if genre == 'metal':
             for fname in os.listdir(genre):
-                generate_randomsilence2(genre+'/'+fname) 
+                generate_oversampling(genre+'/'+fname) 
         if genre == 'pop':
             for fname in os.listdir(genre):
-                generate_randomsilence3(genre+'/'+fname) 
+                generate_undersampling(genre+'/'+fname) 
         if genre == 'reggae':
             for fname in os.listdir(genre):
                 generate_white_noise(genre+'/'+fname) 
