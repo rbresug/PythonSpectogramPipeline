@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random as rd
 
+from Audio_model_cnn_conv_limited import *
 
 def generate_discontinuity(audio_file):
 
@@ -484,3 +485,4 @@ if __name__=='__main__':
     make_distortion_data()
     make_train_data_column()
     make_test_data_column()
+    run_nn()
