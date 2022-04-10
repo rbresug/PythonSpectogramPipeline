@@ -86,15 +86,15 @@ def run_nn():
     y_train.shape,y_test.shape
     ##cnn
     #reshaping to 2D 
-    x_train=np.reshape(x_train,(x_train.shape[0], 36,5))
-    x_test=np.reshape(x_test,(x_test.shape[0], 36,5))
+    x_train=np.reshape(x_train,(x_train.shape[0], 36,6))
+    x_test=np.reshape(x_test,(x_test.shape[0], 36,6))
     x_train.shape,x_test.shape
 
 
 
     #reshaping to shape required by CNN
-    x_train=np.reshape(x_train,(x_train.shape[0], 36,5,1))
-    x_test=np.reshape(x_test,(x_test.shape[0], 36,5,1))
+    x_train=np.reshape(x_train,(x_train.shape[0], 36,6,1))
+    x_test=np.reshape(x_test,(x_test.shape[0], 36,6,1))
 
     x_train.shape,x_test.shape
     from keras import Sequential

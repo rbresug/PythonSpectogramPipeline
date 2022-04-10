@@ -22,6 +22,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random as rd
 
+
+from numpy.linalg import norm
+
+from dtw import dtw
+
+
+#mshahulh 07/04/2022 
+import soundfile
 from Audio_model_cnn_conv_limited import *
 
 def generate_discontinuity(audio_file):
@@ -246,6 +254,12 @@ def generate_white_noise2(audio_file):
 
     MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(c)
 
+#07/04/2022 mshahulh
+def generate_saturated(audio_file):
+    audio, sr = librosa.load(audio_file, sr=22050, mono=True)
+    audio = audio * 5 #can try to play with the multiplier to amplify/minimize the signal
+    soundfile.write(audio_file, data=audio, samplerate=22050)
+
 
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
@@ -326,6 +340,7 @@ def make_train_data_column():
     y_train=[]
     y_test=[]
     arr_features=[]
+    orig_path = "genres_orig/"
     cd = os.getcwd()
     print ("curdir", cd)
     os.chdir('genres')
@@ -336,12 +351,41 @@ def make_train_data_column():
         for fname in os.listdir(genre):
             #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
             y, sr = librosa.load(genre+'/'+fname, duration=30)
+
+            y2, sr2 = librosa.load('../'+ orig_path + genre+'/'+fname, duration=30)
+
             mfccs = np.mean(librosa.feature.mfcc(y, sr, n_mfcc=36).T,axis=0)
+            mfccs2 = np.mean(librosa.feature.mfcc(y2, sr2, n_mfcc=36).T,axis=0)
+
+            mfccs_diff = mfccs2 - mfccs
+            print(mfccs_diff.shape)
+            # mfcc1 = librosa.feature.mfcc(y,sr)   #Computing MFCC values
+            # mfcc2 = librosa.feature.mfcc(y2, sr2)
+            # dist, cost, acc_cost, path = dtw(mfcc1.T, mfcc2.T, dist=lambda x, y: norm(x - y, ord=1))
+
+
             melspectrogram = np.mean(librosa.feature.melspectrogram(y=y, sr=sr, n_mels=36,fmax=8000).T,axis=0)
             chroma_stft=np.mean(librosa.feature.chroma_stft(y=y, sr=sr,n_chroma=36).T,axis=0)
             chroma_cq = np.mean(librosa.feature.chroma_cqt(y=y, sr=sr,n_chroma=36).T,axis=0)
             chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr,n_chroma=36).T,axis=0)
-            features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens)),(36,5))
+
+            # w = (mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens)
+            # print(w)
+            # print("size", len(mfccs) + len(melspectrogram)+ len(chroma_stft) + len(chroma_cq) + len(chroma_cens) )
+            # print("size", len(w))
+            # print("comparison... ")
+            # w2 = (dist.flatten(), cost.flatten(), acc_cost.flatten(), path.flatten())
+            # print("dist",w2.shape)
+            # print("cost",cost)
+            # print("acc_cost",acc_cost)
+            # print("path",path)
+            # #print("size", len(dist) + len(cost)+ len(chroma_stft) + len(acc_cost) + len(path) )
+            # print("size", len(w2))
+            
+            
+            # features2=np.reshape(np.vstack((dist, cost, acc_cost, path)),(36,5))
+
+            features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens,mfccs_diff)),(36,6))
             x_train.append(features)
             y_train.append(idx)
 
@@ -359,17 +403,22 @@ def make_test_data_column():
     y_test=[]
     arr_features=[]
     os.chdir('genres')
+    orig_path = "genres_orig/"
     genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
     for fnamed in tqdm(os.listdir('test'),total=10*len(genres)):
         for fname in os.listdir('test/'+fnamed):
             print('test/'+ fnamed +'/'+fname)
             y, sr = librosa.load('test/'+ fnamed +'/'+fname, duration=30)
+            y2, sr2 = librosa.load('../'+ orig_path + 'test/'+ fnamed +'/'+fname, duration=30)
             mfccs = np.mean(librosa.feature.mfcc(y, sr, n_mfcc=36).T,axis=0)
+            mfccs2 = np.mean(librosa.feature.mfcc(y2, sr2, n_mfcc=36).T,axis=0)
+
+            mfccs_diff = mfccs2 - mfccs
             melspectrogram = np.mean(librosa.feature.melspectrogram(y=y, sr=sr, n_mels=36,fmax=8000).T,axis=0)
             chroma_stft=np.mean(librosa.feature.chroma_stft(y=y, sr=sr,n_chroma=36).T,axis=0)
             chroma_cq = np.mean(librosa.feature.chroma_cqt(y=y, sr=sr,n_chroma=36).T,axis=0)
             chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr,n_chroma=36).T,axis=0)
-            features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens)),(36,5))
+            features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens, mfccs_diff)),(36,6))
             x_test.append(features)
             print("index", genres.index(fnamed.split('.')[0]))
             y_test.append(genres.index(fnamed.split('.')[0]))
@@ -450,7 +499,7 @@ def make_distortion_data():
                 generate_undersampling(genre+'/'+fname) 
         if genre == 'reggae':
             for fname in os.listdir(genre):
-                generate_white_noise(genre+'/'+fname) 
+                generate_saturated(genre+'/'+fname) 
         if genre == 'rock':
             for fname in os.listdir(genre):
                 generate_randomsilence5(genre+'/'+fname)
