@@ -133,15 +133,16 @@ def generate_click_n_pops(audio_file):
 
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
     
-    # I purposely generate random int between 2 - 5 to varies the location of the click n pops in the audio
-    rand_length = []
-    for x in range(3):
-        y = rd.randint(2,5)
-        rand_length.append(y)
-        
-    click_locs = [len(audio) // 4,    len(audio) // 2,    len(audio) * 3 // 4]
-
-    for click_loc, amp in zip(click_locs, [.5, .15, .05]):#
+    num_clicks = 20
+    # I purposely generate random int between 2 - num_clicks to varies the location of the click n pops in the audio
+    length_vals = []
+    amp_vals = []
+    for x in range(num_clicks):
+        rand_length = rd.randint(2,num_clicks)
+        rand_amp = rd.randint(5,50)
+        length_vals.append(rand_length)
+        amp_vals.append(float(rand_amp) / 100)
+    for click_loc, amp in zip(length_vals,amp_vals):
         audio[click_loc] += amp
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
@@ -458,10 +459,16 @@ def make_train_data_orig():
     os.chdir('..')
     df.to_csv('train_data.csv',index=False)
 
-def make_distortion_data():
-    arr_features=[]
+
+def make_distortion_data_all():
     os.chdir('genres')
-    #os.chdir('train')
+    make_distortion_current_folder()
+    os.chdir('test')
+    make_distortion_current_folder()
+    os.chdir('..')
+    os.chdir('..')
+
+def make_distortion_current_folder():
     genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
     for idx,genre in tqdm(enumerate(genres),total=len(genres)):
         
@@ -503,7 +510,7 @@ def make_distortion_data():
         if genre == 'rock':
             for fname in os.listdir(genre):
                 generate_randomsilence5(genre+'/'+fname)
-    os.chdir('..')         
+    
 
 def make_test_data():
     arr_features=[]
@@ -531,7 +538,7 @@ if __name__=='__main__':
     # Country = Discontinuity
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
-    make_distortion_data()
+    make_distortion_data_all()
     make_train_data_column()
     make_test_data_column()
     run_nn()
