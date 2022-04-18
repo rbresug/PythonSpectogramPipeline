@@ -21,26 +21,15 @@ from essentia import array
 import matplotlib.pyplot as plt
 import numpy as np
 import random as rd
-
-
 from numpy.linalg import norm
-
 from dtw import dtw
-
-
-#mshahulh 07/04/2022 
 import soundfile
 from Audio_model_cnn_conv_limited import *
 
 def generate_discontinuity(audio_file):
-
-    plt.rcParams["figure.figsize"] = (12, 9)
-
     sr = 22050
-
     audio = MonoLoader(filename=audio_file, sampleRate =sr)()
-
-    jump_starts = np.array([len(audio) // 2, len(audio) // 2])
+    jump_starts = np.array([len(audio) // 4, len(audio) // 2])
     ground_truth = jump_starts / sr
 
     try:
@@ -48,7 +37,7 @@ def generate_discontinuity(audio_file):
             l_amp = audio[start]
             # Remove samples until the jump produces a prominent discontinuity so it can be perceived.
             end = next(
-                idx for idx, r_amp in enumerate(audio[start:], start) if abs(r_amp - l_amp) > 0.3
+                idx for idx, r_amp in enumerate(audio[start:], start)
             )
             audio = np.delete(audio, range(start, end))
     except StopIteration:
@@ -56,10 +45,9 @@ def generate_discontinuity(audio_file):
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence(audio_file):
-    sr = 44100
+    sr = 22050
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
-    
-    
+      
     time_axis = np.arange(len(audio)) / sr
     gap_position = rd.randint(2,28)
     gap_duration = 0.5
@@ -71,23 +59,20 @@ def generate_randomsilence(audio_file):
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_undersampling(audio_file):
-    sr = 44100
+    sr = 22050
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
     sr = sr / 2
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
-
 def generate_oversampling(audio_file):
-    sr = 44100
+    sr = 22050
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
     sr = sr * 2
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
-
 def generate_randomsilence3(audio_file):
-    sr = 44100
+    sr = 22050
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
-    
     
     time_axis = np.arange(len(audio)) / sr
     gap_position = rd.randint(2,20)
@@ -100,7 +85,7 @@ def generate_randomsilence3(audio_file):
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence4(audio_file):
-    sr = 44100
+    sr = 22050
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
     
     time_axis = np.arange(len(audio)) / sr
@@ -114,7 +99,7 @@ def generate_randomsilence4(audio_file):
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 
 def generate_randomsilence5(audio_file):
-    sr = 44100
+    sr = 22050
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
        
     time_axis = np.arange(len(audio)) / sr
@@ -129,26 +114,26 @@ def generate_randomsilence5(audio_file):
 
 #25/3/22 mshahulh
 def generate_click_n_pops(audio_file):
-    sr = 44100
+    sr = 22050
 
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
     
-    # I purposely generate random int between 2 - 5 to varies the location of the click n pops in the audio
-    rand_length = []
-    for x in range(3):
-        y = rd.randint(2,5)
-        rand_length.append(y)
-        
-    click_locs = [len(audio) // 4,    len(audio) // 2,    len(audio) * 3 // 4]
-
-    for click_loc, amp in zip(click_locs, [.5, .15, .05]):#
+    num_clicks = 20
+    # I purposely generate random int between 2 - num_clicks to varies the location of the click n pops in the audio
+    length_vals = []
+    amp_vals = []
+    for x in range(num_clicks):
+        rand_length = rd.randint(2,num_clicks)
+        rand_amp = rd.randint(5,50)
+        length_vals.append(rand_length)
+        amp_vals.append(float(rand_amp) / 100)
+    for click_loc, amp in zip(length_vals,amp_vals):
         audio[click_loc] += amp
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
 #25/3/22 mshahulh
 def generate_hum2(audio_file):
-    
-    sr = 44100
+    sr = 22050
     
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
 
@@ -162,15 +147,12 @@ def generate_hum2(audio_file):
 
     # Attenuate the hum 30 dB.
     hum *= db2amp(-30)
-
-    audio_with_hum = audio + hum
-    
+    audio_with_hum = audio + hum 
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
 
 #25/3/22 mshahulh
 def generate_hum(audio_file):
-    
-    sr = 44100
+    sr = 22050
     
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
 
@@ -184,25 +166,19 @@ def generate_hum(audio_file):
 
     # Attenuate the hum 30 dB.
     hum *= db2amp(-30)
-
     audio_with_hum = audio + hum
-    
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
-#28/3/2022 mshahulh
+
 def generate_white_noise(audio_file):
-    time = 25  # s   
-    sr = 44100
+    time = 30 # s   
+    sr = 22050
     audio_db = -15
     noise_db = -95
     audio = MonoLoader(filename= audio_file, sampleRate= sr)()
     audio *= db2amp(audio_db)
     
     noise_only = 1
-
-
-
     time = np.arange(sr * time) / sr
-    
     noise = np.random.randn(len(time)).astype(np.float32)
     noise *= db2amp(noise_db)
 
@@ -220,19 +196,17 @@ def generate_white_noise(audio_file):
         c = audio.copy()
         c[:len(noise)] += noise
     MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(c)
+    
 def generate_white_noise2(audio_file):
     
-    sr = 44100
-    time = 25  # s
+    sr = 22050
+    time = 30  # s
     audio_db = -10
     noise_db = -80
     audio = MonoLoader(filename= audio_file, sampleRate= sr)()
     audio *= db2amp(audio_db)
     
     noise_only = 1
-
-
-
     time = np.arange(sr * time) / sr
     
     noise = np.random.randn(len(time)).astype(np.float32)
@@ -259,7 +233,6 @@ def generate_saturated(audio_file):
     audio, sr = librosa.load(audio_file, sr=22050, mono=True)
     audio = audio * 5 #can try to play with the multiplier to amplify/minimize the signal
     soundfile.write(audio_file, data=audio, samplerate=22050)
-
 
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
@@ -312,15 +285,15 @@ def make_train_data():
     arr_features=[]
     os.chdir('genres')
     #os.chdir('train')
-    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    genres = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
 
 
 
-    for idx,genre in tqdm(enumerate(genres),total=len(genres)):
-        for fname in os.listdir(genre):
+    for idx,distort in tqdm(enumerate(genres),total=len(genres)):
+        for fname in os.listdir(distort):
             #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-            y, sr = librosa.load(genre+'/'+fname, duration=10)
-            print(genre+'/'+fname)
+            y, sr = librosa.load(distort+'/'+fname, duration=30)
+            print(distort+'/'+fname)
             print(y)
             print("size" + str(len(y)))
             print(sr)
@@ -345,14 +318,14 @@ def make_train_data_column():
     print ("curdir", cd)
     os.chdir('genres')
     #os.chdir('train')
-    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    genres = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
     #genres = 'blues'.split()
-    for idx,genre in tqdm(enumerate(genres),total=len(genres)):
-        for fname in os.listdir(genre):
+    for idx,distort in tqdm(enumerate(genres),total=len(genres)):
+        for fname in os.listdir(distort):
             #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-            y, sr = librosa.load(genre+'/'+fname, duration=30)
+            y, sr = librosa.load(distort+'/'+fname, duration=30)
 
-            y2, sr2 = librosa.load('../'+ orig_path + genre+'/'+fname, duration=30)
+            y2, sr2 = librosa.load('../'+ orig_path + distort+'/'+fname, duration=30)
 
             mfccs = np.mean(librosa.feature.mfcc(y, sr, n_mfcc=36).T,axis=0)
             mfccs2 = np.mean(librosa.feature.mfcc(y2, sr2, n_mfcc=36).T,axis=0)
@@ -404,7 +377,7 @@ def make_test_data_column():
     arr_features=[]
     os.chdir('genres')
     orig_path = "genres_orig/"
-    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    genres = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
     for fnamed in tqdm(os.listdir('test'),total=10*len(genres)):
         for fname in os.listdir('test/'+fnamed):
             print('test/'+ fnamed +'/'+fname)
@@ -439,12 +412,12 @@ def make_train_data_orig():
     os.chdir('genres')
     #os.chdir('train')
     #genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
-    genres = 'blues'.split()
-    for idx,genre in tqdm(enumerate(genres),total=len(genres)):
-        for fname in os.listdir(genre):
+    genres = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
+    for idx,distort in tqdm(enumerate(genres),total=len(genres)):
+        for fname in os.listdir(distort):
             #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-            y, sr = librosa.load(genre+'/'+fname, duration=10)
-            print(genre+'/'+fname)
+            y, sr = librosa.load(distort+'/'+fname, duration=30)
+            print(distort+'/'+fname)
             print(y)
             print("size" + str(len(y)))
             print(sr)
@@ -458,62 +431,81 @@ def make_train_data_orig():
     os.chdir('..')
     df.to_csv('train_data.csv',index=False)
 
-def make_distortion_data():
-    arr_features=[]
+
+def make_distortion_data_all():
     os.chdir('genres')
-    #os.chdir('train')
+    make_distortion_current_folder()
+    os.chdir('genres/test')
+    make_distortion_current_folder()
+    os.chdir('..')
+    
+
+def make_distortion_current_folder():
     genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
-    for idx,genre in tqdm(enumerate(genres),total=len(genres)):
-        
-        if genre == 'blues': #ToDo complete this list
-            for fname in os.listdir(genre):
-                
-                generate_randomsilence(genre+'/'+fname)        
-        if genre == 'classical':
-            for fname in os.listdir(genre):
-
-                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-                generate_click_n_pops(genre+'/'+fname)
-        if genre == 'country':
-            for fname in os.listdir(genre):
-
-                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-                print("d")
-                generate_discontinuity(genre+'/'+fname)
-        if genre == 'disco':
-            for fname in os.listdir(genre):
-
-                #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
-                generate_hum(genre+'/'+fname)
-        if genre == 'hiphop':
-            for fname in os.listdir(genre):
-                generate_white_noise2(genre+'/'+fname)
-        if genre == 'jazz':
-            for fname in os.listdir(genre):
-                generate_hum2(genre+'/'+fname) 
-        if genre == 'metal':
-            for fname in os.listdir(genre):
-                generate_oversampling(genre+'/'+fname) 
-        if genre == 'pop':
-            for fname in os.listdir(genre):
-                generate_undersampling(genre+'/'+fname) 
-        if genre == 'reggae':
-            for fname in os.listdir(genre):
-                generate_saturated(genre+'/'+fname) 
-        if genre == 'rock':
-            for fname in os.listdir(genre):
-                generate_randomsilence5(genre+'/'+fname)
+    
+    #os.chdir('train')
+    distortions = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
+    for idx,distort in tqdm(enumerate(distortions),total=len(distortions)):  
+        if distort == 'randomsilence': #ToDo complete this list
+            for fname in os.listdir(distort):             
+                generate_randomsilence(distort+'/'+fname)        
+        if distort == 'click_n_pop':
+            for fname in os.listdir(distort):
+                generate_click_n_pops(distort+'/'+fname)
+        if distort == 'discontinuity':
+            for fname in os.listdir(distort):
+                generate_discontinuity(distort+'/'+fname)
+        if distort == 'hum':
+            for fname in os.listdir(distort):
+                generate_hum(distort+'/'+fname)
+        # if genre == 'hiphop':
+            # for fname in os.listdir(genre):
+                # generate_white_noise2(genre+'/'+fname)
+        # if genre == 'jazz':
+            # for fname in os.listdir(genre):
+                # generate_hum2(genre+'/'+fname) 
+        # if genre == 'metal':
+            # for fname in os.listdir(genre):
+                # generate_oversampling(genre+'/'+fname) 
+        # if genre == 'pop':
+            # for fname in os.listdir(genre):
+                # generate_undersampling(genre+'/'+fname) 
+        # if genre == 'reggae':
+            # for fname in os.listdir(genre):
+                # generate_saturated(genre+'/'+fname) 
+        # if genre == 'rock':
+            # for fname in os.listdir(genre):
+                # generate_randomsilence5(genre+'/'+fname)
+                # generate_hum(distort+'/'+fname)
+        if distort == 'white_noise2':
+            for fname in os.listdir(distort):
+                generate_white_noise2(distort+'/'+fname)
+        if distort == 'hum2':
+            for fname in os.listdir(distort):
+                generate_hum2(distort+'/'+fname) 
+        if distort == 'oversampling':
+            for fname in os.listdir(distort):
+                generate_oversampling(distort+'/'+fname) 
+        if distort == 'undersampling':
+            for fname in os.listdir(distort):
+                generate_undersampling(distort+'/'+fname) 
+        if distort == 'saturated':
+            for fname in os.listdir(distort):
+                generate_saturated(distort+'/'+fname) 
+        if distort == 'randomsilence5':
+            for fname in os.listdir(distort):
+                generate_randomsilence5(distort+'/'+fname)
     os.chdir('..')         
 
 def make_test_data():
     arr_features=[]
     os.chdir('genres')
     #genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
-    distortions = 'gaps hums discontinuity disco hiphop jazz metal pop reggae rock'.split()
-    for fname in tqdm(os.listdir('test'),total=10*len(genres)):
+    distortions = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
+    for fname in tqdm(os.listdir('test'),total=10*len(distortions)):
             y, sr = librosa.load('test/'+fname, duration=30)
             dict_features=extract_features(y=y,sr=sr)
-            dict_features['label']=genres.index(fname.split('.')[0])
+            dict_features['label']=distortions.index(fname.split('.')[0])
             arr_features.append(dict_features)
 
     df=pd.DataFrame(data=arr_features)
@@ -531,7 +523,7 @@ if __name__=='__main__':
     # Country = Discontinuity
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
-    make_distortion_data()
+    make_distortion_data_all()
     make_train_data_column()
     make_test_data_column()
     run_nn()

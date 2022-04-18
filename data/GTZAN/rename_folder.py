@@ -88,6 +88,12 @@ def rename_folder():
             os.rename(target_main, target_dest)
     os.chdir('..')
 
+def function_rename_folder():
+    rename_folder()
+    os.chdir('genres/test')
+    rename_folder()
+    os.chdir('..')
+    
 if __name__=='__main__':
     #ToDo insert feature of introducing distortions
     #Blues = random silence
@@ -95,4 +101,4 @@ if __name__=='__main__':
     # Country = Discontinuity
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
-    rename_folder()
+    function_rename_folder()
