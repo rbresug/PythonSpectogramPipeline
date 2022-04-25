@@ -64,8 +64,8 @@ def run_nn():
     y_test = genfromtxt('test_labels.csv', delimiter=',')
 
     song_samples = 660000
-    genres = {'blues': 0 ,'classical': 1, 'country': 2, 'disco': 3, 'hiphop': 4, 
-            'jazz': 5, 'metal': 6, 'pop': 7, 'reggae': 8, 'rock': 9}
+    distort = {'randomsilence': 0 ,'click_n_pop': 1, 'discontinuity': 2, 'hum': 3, 'white_noise2': 4, 
+        'hum2': 5, 'oversampling': 6, 'undersampling': 7, 'saturated': 8, 'randomsilence5': 9}
 
     ''' cols2 = pd.read_csv('test_data.csv', nrows=1).columns
     x_test = pd.read_csvt('test_data.csv', delimiter=',')#, usecols=cols2[:-1])
@@ -175,7 +175,7 @@ def run_nn():
 
 
 
-    keys = OrderedDict(sorted(genres.items(), key=lambda t: t[1])).keys()
+    keys = OrderedDict(sorted(distort.items(), key=lambda t: t[1])).keys()
 
     plt.figure(figsize=(10,10))
     plot_confusion_matrix(cm, keys, normalize=True)
