@@ -234,6 +234,30 @@ def generate_saturated(audio_file):
     audio = audio * 5 #can try to play with the multiplier to amplify/minimize the signal
     soundfile.write(audio_file, data=audio, samplerate=22050)
 
+def generate_chop_every_on_frame(audio_file):
+    audio, sr = librosa.load(audio_file, sr=22050, mono=True)
+    chop_on_frames = 10
+    chop_size = 1
+    print('Chop slice of {} frames on every {}'.format(chop_size, chop_on_frames))
+    r_buf = [[], []]
+    chop_counter = 0
+    chop_size_counter = 0
+
+    for i in range(len(audio[0])):
+        if chop_size_counter < chop_size and chop_counter >= chop_on_frames:
+            chop_size_counter += 1
+        else:    
+            chop_counter = 0
+            chop_size_counter = 0
+
+        if chop_counter < chop_on_frames:
+            r_buf[0].append(audio[0][i])
+            r_buf[1].append(audio[1][i])
+            chop_counter += 1
+    
+    soundfile.write(audio_file, data=r_buf, samplerate=22050)
+    
+
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
 def extract_features(y,sr=22050,n_fft=1024,hop_length=512):
@@ -285,7 +309,7 @@ def make_train_data():
     arr_features=[]
     os.chdir('genres')
     #os.chdir('train')
-    genres = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
+    genres = 'click_n_pop discontinuity hum hum2 oversampling randomsilence randomsilence5 saturated undersampling white_noise2'.split()
 
 
 
@@ -318,9 +342,9 @@ def make_train_data_column():
     print ("curdir", cd)
     os.chdir('genres')
     #os.chdir('train')
-    genres = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
-    #genres = 'blues'.split()
-    for idx,distort in tqdm(enumerate(genres),total=len(genres)):
+    distortion_type = 'click_n_pop discontinuity hum hum2 oversampling randomsilence randomsilence5 saturated undersampling white_noise2'.split()
+    #distortion_type = 'blues'.split()
+    for idx,distort in tqdm(enumerate(distortion_type),total=len(distortion_type)):
         for fname in os.listdir(distort):
             #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
             y, sr = librosa.load(distort+'/'+fname, duration=30)
@@ -377,8 +401,8 @@ def make_test_data_column():
     arr_features=[]
     os.chdir('genres')
     orig_path = "genres_orig/"
-    genres = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
-    for fnamed in tqdm(os.listdir('test'),total=10*len(genres)):
+    distortion_type = 'click_n_pop discontinuity hum hum2 oversampling randomsilence randomsilence5 saturated undersampling white_noise2'.split()
+    for fnamed in tqdm(os.listdir('test'),total=10*len(distortion_type)):
         for fname in os.listdir('test/'+fnamed):
             print('test/'+ fnamed +'/'+fname)
             y, sr = librosa.load('test/'+ fnamed +'/'+fname, duration=30)
@@ -393,8 +417,8 @@ def make_test_data_column():
             chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr,n_chroma=36).T,axis=0)
             features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens, mfccs_diff)),(36,6))
             x_test.append(features)
-            print("index", genres.index(fnamed.split('.')[0]))
-            y_test.append(genres.index(fnamed.split('.')[0]))
+            print("index", distortion_type.index(fnamed.split('.')[0]))
+            y_test.append(distortion_type.index(fnamed.split('.')[0]))
 
     x_test=np.array(x_test)
     y_test=np.array(y_test)
@@ -411,9 +435,9 @@ def make_train_data_orig():
     print ("curdir", cd)
     os.chdir('genres')
     #os.chdir('train')
-    #genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
-    genres = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
-    for idx,distort in tqdm(enumerate(genres),total=len(genres)):
+    #distortion_type = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    distortion_type = 'click_n_pop discontinuity hum hum2 oversampling randomsilence randomsilence5 saturated undersampling white_noise2'.split()
+    for idx,distort in tqdm(enumerate(distortion_type),total=len(distortion_type)):
         for fname in os.listdir(distort):
             #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
             y, sr = librosa.load(distort+'/'+fname, duration=30)
@@ -442,10 +466,9 @@ def make_distortion_data_all():
 
 def make_distortion_current_folder():
     genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
-    
     #os.chdir('train')
-    distortions = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
-    for idx,distort in tqdm(enumerate(distortions),total=len(distortions)):  
+    distortion_type = 'click_n_pop discontinuity hum hum2 oversampling randomsilence randomsilence5 saturated undersampling white_noise2'.split()
+    for idx,distort in tqdm(enumerate(distortion_type),total=len(distortion_type)):  
         if distort == 'randomsilence': #ToDo complete this list
             for fname in os.listdir(distort):             
                 generate_randomsilence(distort+'/'+fname)        
@@ -501,11 +524,11 @@ def make_test_data():
     arr_features=[]
     os.chdir('genres')
     #genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
-    distortions = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
-    for fname in tqdm(os.listdir('test'),total=10*len(distortions)):
+    distortion_type = 'click_n_pop discontinuity hum hum2 oversampling randomsilence randomsilence5 saturated undersampling white_noise2'.split()
+    for fname in tqdm(os.listdir('test'),total=10*len(distortion_type)):
             y, sr = librosa.load('test/'+fname, duration=30)
             dict_features=extract_features(y=y,sr=sr)
-            dict_features['label']=distortions.index(fname.split('.')[0])
+            dict_features['label']=distortion_type.index(fname.split('.')[0])
             arr_features.append(dict_features)
 
     df=pd.DataFrame(data=arr_features)

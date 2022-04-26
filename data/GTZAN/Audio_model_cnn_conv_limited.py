@@ -64,8 +64,8 @@ def run_nn():
     y_test = genfromtxt('test_labels.csv', delimiter=',')
 
     song_samples = 660000
-    genres = {'randomsilence': 0 ,'click_n_pop': 1, 'discontinuity': 2, 'hum': 3, 'white_noise2': 4, 
-            'hum2': 5, 'oversampling': 6, 'undersampling': 7, 'saturated': 8, 'randomsilence5': 9}
+    genres = {'click_n_pop': 0 ,'discontinuity': 1, 'hum': 2, 'hum2': 3, 'oversampling': 4, 
+            'randomsilence': 5, 'randomsilence5': 6, 'saturated': 7, 'undersampling': 8, 'white_noise2': 9}
 
     ''' cols2 = pd.read_csv('test_data.csv', nrows=1).columns
     x_test = pd.read_csvt('test_data.csv', delimiter=',')#, usecols=cols2[:-1])
