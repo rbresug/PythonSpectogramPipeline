@@ -30,6 +30,8 @@ from dtw import dtw
 
 #mshahulh 07/04/2022 
 import soundfile
+import logging
+logger = logging.getLogger(__name__)
 from Audio_model_cnn_conv_limited import *
 
 def generate_discontinuity(audio_file):
@@ -42,7 +44,6 @@ def generate_discontinuity(audio_file):
 
     jump_starts = np.array([len(audio) // 2, len(audio) // 2])
     ground_truth = jump_starts / sr
-
     try:
         for start in jump_starts:
             l_amp = audio[start]
@@ -54,6 +55,7 @@ def generate_discontinuity(audio_file):
     except StopIteration:
         pass
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+    logger.debug("Done for file {}".format(audio_file))
 
 def generate_randomsilence(audio_file):
     sr = 44100
@@ -69,12 +71,14 @@ def generate_randomsilence(audio_file):
     
     audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+    logger.debug("Done for file {}".format(audio_file))
 
 def generate_undersampling(audio_file):
     sr = 44100
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
     sr = sr / 2
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+    logger.debug("Done for file {}".format(audio_file))
 
 
 def generate_oversampling(audio_file):
@@ -82,6 +86,7 @@ def generate_oversampling(audio_file):
     audio = MonoLoader(filename=audio_file, sampleRate=sr)()
     sr = sr * 2
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+    logger.debug("Done for file {}".format(audio_file))
 
 
 def generate_randomsilence3(audio_file):
@@ -98,6 +103,7 @@ def generate_randomsilence3(audio_file):
     
     audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+    logger.debug("Done for file {}".format(audio_file))
 
 def generate_randomsilence4(audio_file):
     sr = 44100
@@ -112,6 +118,7 @@ def generate_randomsilence4(audio_file):
     
     audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+    logger.debug("Done for file {}".format(audio_file))
 
 def generate_randomsilence5(audio_file):
     sr = 44100
@@ -126,6 +133,7 @@ def generate_randomsilence5(audio_file):
     
     audio[gap_start: gap_end] = np.zeros(int(gap_duration * sr))
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+    logger.debug("Done for file {}".format(audio_file))
 
 #25/3/22 mshahulh
 def generate_click_n_pops(audio_file):
@@ -146,6 +154,7 @@ def generate_click_n_pops(audio_file):
         audio[click_loc] += amp
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio)
+    logger.debug("Done for file {}".format(audio_file))
 #25/3/22 mshahulh
 def generate_hum2(audio_file):
     
@@ -167,6 +176,7 @@ def generate_hum2(audio_file):
     audio_with_hum = audio + hum
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
+    logger.debug("Done for file {}".format(audio_file))
 
 #25/3/22 mshahulh
 def generate_hum(audio_file):
@@ -189,7 +199,12 @@ def generate_hum(audio_file):
     audio_with_hum = audio + hum
     
     MonoWriter(filename=audio_file, sampleRate=sr, format='wav')(audio_with_hum)
+<<<<<<< Updated upstream
 #28/3/2022 mshahulh
+=======
+    logger.debug("Done for file {}".format(audio_file))
+
+>>>>>>> Stashed changes
 def generate_white_noise(audio_file):
     time = 25  # s   
     sr = 44100
@@ -221,6 +236,11 @@ def generate_white_noise(audio_file):
         c = audio.copy()
         c[:len(noise)] += noise
     MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(c)
+<<<<<<< Updated upstream
+=======
+    logger.debug("Done for file {}".format(audio_file))
+    
+>>>>>>> Stashed changes
 def generate_white_noise2(audio_file):
     
     sr = 44100
@@ -254,17 +274,47 @@ def generate_white_noise2(audio_file):
         c[:len(noise)] += noise
 
     MonoWriter(filename = audio_file ,format='wav',sampleRate=sr)(c)
+    logger.debug("Done for file {}".format(audio_file))
 
 #07/04/2022 mshahulh
 def generate_saturated(audio_file):
     audio, sr = librosa.load(audio_file, sr=22050, mono=True)
     audio = audio * 5 #can try to play with the multiplier to amplify/minimize the signal
     soundfile.write(audio_file, data=audio, samplerate=22050)
+    logger.debug("Done for file {}".format(audio_file))
 
+<<<<<<< Updated upstream
+=======
+def generate_chop_every_on_frame(audio_file):
+    audio, sr = librosa.load(audio_file, sr=22050, mono=True)
+    chop_on_frames = 10
+    chop_size = 1
+    print('Chop slice of {} frames on every {}'.format(chop_size, chop_on_frames))
+    r_buf = [[], []]
+    chop_counter = 0
+    chop_size_counter = 0
+
+    for i in range(len(audio[0])):
+        if chop_size_counter < chop_size and chop_counter >= chop_on_frames:
+            chop_size_counter += 1
+        else:    
+            chop_counter = 0
+            chop_size_counter = 0
+
+        if chop_counter < chop_on_frames:
+            r_buf[0].append(audio[0][i])
+            r_buf[1].append(audio[1][i])
+            chop_counter += 1
+    
+    soundfile.write(audio_file, data=r_buf, samplerate=22050)
+    logger.debug("Done for file {}".format(audio_file))
+    
+>>>>>>> Stashed changes
 
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
 def extract_features(y,sr=22050,n_fft=1024,hop_length=512):
+    logger.info("Starting feature extraction")
     features = {'centroid': librosa.feature.spectral_centroid(y, sr=sr, n_fft=n_fft, hop_length=hop_length).ravel(),
                 'flux': librosa.onset.onset_strength(y=y, sr=sr).ravel(),
                 'rmse': librosa.feature.rms(y, frame_length=n_fft, hop_length=hop_length).ravel(),
@@ -281,6 +331,7 @@ def extract_features(y,sr=22050,n_fft=1024,hop_length=512):
 
     # Get statistics from the vectors
     def get_feature_stats(features):
+        logger.info("Subfunction: Get Feature Stats")
         result = {}
         for k, v in features.items():
             result['{}_max'.format(k)] = np.max(v)
@@ -300,6 +351,7 @@ def extract_features(y,sr=22050,n_fft=1024,hop_length=512):
 #23/03/22 RBresug:
 #precondition is to download from wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
 def extract_features_limited(y,sr=22050,n_fft=1024,hop_length=512):
+    logger.info("Extracting Features in Limited Data")
     mfccs = np.mean(librosa.feature.mfcc(y, sr, n_mfcc=36).T,axis=0)
     melspectrogram = np.mean(librosa.feature.melspectrogram(y=y, sr=sr, n_mels=36,fmax=8000).T,axis=0)
     chroma_stft=np.mean(librosa.feature.chroma_stft(y=y, sr=sr,n_chroma=36).T,axis=0)
@@ -310,6 +362,7 @@ def extract_features_limited(y,sr=22050,n_fft=1024,hop_length=512):
     return features
 
 def make_train_data():
+    logger.info("Starting to make train data")
     arr_features=[]
     os.chdir('genres')
     #os.chdir('train')
@@ -320,22 +373,31 @@ def make_train_data():
     for idx,distort in tqdm(enumerate(genres),total=len(genres)):
         for fname in os.listdir(genre):
             #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
+<<<<<<< Updated upstream
             y, sr = librosa.load(distort+'/'+fname, duration=10)
             print(distort+'/'+fname)
             print(y)
             print("size" + str(len(y)))
             print(sr)
+=======
+            y, sr = librosa.load(distort+'/'+fname, duration=30)
+            logger.debug(distort+'/'+fname)
+            logger.debug(y)
+            logger.debug("size" + str(len(y)))
+            logger.debug(sr)
+>>>>>>> Stashed changes
             dict_features=extract_features_limited(y=y,sr=sr)
             dict_features['label']=idx
             arr_features.append(dict_features)
 
     df=pd.DataFrame(data=arr_features)
-    print(df.head())
-    print(df.shape)
+    logger.debug(df.head())
+    logger.debug(df.shape)
     os.chdir('..')
     df.to_csv('train_data.csv',index=False)
 
 def make_train_data_column():
+    logger.info("Make Train Data Column")
     x_train=[]
     x_test=[]
     y_train=[]
@@ -343,7 +405,7 @@ def make_train_data_column():
     arr_features=[]
     orig_path = "genres_orig/"
     cd = os.getcwd()
-    print ("curdir", cd)
+    logger.debug("curdir", cd)
     os.chdir('genres')
     #os.chdir('train')
     genres = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
@@ -400,6 +462,7 @@ def make_train_data_column():
     np.savetxt("train_labels.csv",y_train,delimiter=",")
 
 def make_test_data_column():
+    logger.info("Make Test Data Column")
     x_test=[]
     y_test=[]
     arr_features=[]
@@ -421,8 +484,13 @@ def make_test_data_column():
             chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr,n_chroma=36).T,axis=0)
             features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens, mfccs_diff)),(36,6))
             x_test.append(features)
+<<<<<<< Updated upstream
             print("index", genres.index(fnamed.split('.')[0]))
             y_test.append(genres.index(fnamed.split('.')[0]))
+=======
+            logger.debug("index", distortion_type.index(fnamed.split('.')[0]))
+            y_test.append(distortion_type.index(fnamed.split('.')[0]))
+>>>>>>> Stashed changes
 
     x_test=np.array(x_test)
     y_test=np.array(y_test)
@@ -436,7 +504,7 @@ def make_test_data_column():
 def make_train_data_orig():
     arr_features=[]
     cd = os.getcwd()
-    print ("curdir", cd)
+    logger.debug("curdir", cd)
     os.chdir('genres')
     #os.chdir('train')
     #genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
@@ -444,23 +512,32 @@ def make_train_data_orig():
     for idx,distort in tqdm(enumerate(genres),total=len(genres)):
         for fname in os.listdir(distort):
             #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
+<<<<<<< Updated upstream
             y, sr = librosa.load(distort+'/'+fname, duration=10)
             print(distort+'/'+fname)
             print(y)
             print("size" + str(len(y)))
             print(sr)
+=======
+            y, sr = librosa.load(distort+'/'+fname, duration=30)
+            logger.debug(distort+'/'+fname)
+            logger.debug(y)
+            logger.debug("size" + str(len(y)))
+            logger.debug(sr)
+>>>>>>> Stashed changes
             _features=extract_features_limited(y=y,sr=sr)
             arr_features.append(_features)
             arr_features.append(idx)
 
     df=pd.DataFrame(data=arr_features)
-    print(df.head())
-    print(df.shape)
+    logger.debug(df.head())
+    logger.debug(df.shape)
     os.chdir('..')
     df.to_csv('train_data.csv',index=False)
 
 
 def make_distortion_data_all():
+    logger.info("Start Make Distortion Data All")
     os.chdir('genres')
     make_distortion_current_folder()
     os.chdir('test')
@@ -469,6 +546,7 @@ def make_distortion_data_all():
     os.chdir('..')
 
 def make_distortion_current_folder():
+    logger.info("Generating Discontinuity")
     genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
     for idx,genre in tqdm(enumerate(genres),total=len(genres)):
     #os.chdir('train')
@@ -476,20 +554,28 @@ def make_distortion_current_folder():
     for idx,distort in tqdm(enumerate(genres),total=len(genres)):
         
         if distort == 'randomsilence': #ToDo complete this list
+<<<<<<< Updated upstream
             for fname in os.listdir(distort):
                 
+=======
+            logger.info("Generating Random Silence 1s")
+            for fname in os.listdir(distort):             
+>>>>>>> Stashed changes
                 generate_randomsilence(distort+'/'+fname)        
         if distort == 'click_n_pop':
+            logger.info("Generating Click and Pops")
             for fname in os.listdir(distort):
 
                 #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
                 generate_click_n_pops(distort+'/'+fname)
         if distort == 'discontinuity':
+            logger.info("Generating Discontinuity")
             for fname in os.listdir(distort):
 
                 #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
                 generate_discontinuity(distort+'/'+fname)
         if distort == 'hum':
+            logger.info("Generating Hum")
             for fname in os.listdir(distort):
 
                 #23/03/22 RBresug: selected only 10 seconds because of error ValueError: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum possible size.
@@ -515,26 +601,33 @@ def make_distortion_current_folder():
     
                 generate_hum(distort+'/'+fname)
         if distort == 'white_noise2':
+            logger.info("Generating White Noise #2")
             for fname in os.listdir(distort):
                 generate_white_noise2(distort+'/'+fname)
         if distort == 'hum2':
+            logger.info("Generating Hum #2")
             for fname in os.listdir(distort):
                 generate_hum2(distort+'/'+fname) 
         if distort == 'oversampling':
+            logger.info("Generating Oversampling")
             for fname in os.listdir(distort):
                 generate_oversampling(distort+'/'+fname) 
         if distort == 'undersampling':
+            logger.info("Generating Undersampling")
             for fname in os.listdir(distort):
                 generate_undersampling(distort+'/'+fname) 
         if distort == 'saturated':
+            logger.info("Generating Saturated")
             for fname in os.listdir(distort):
                 generate_saturated(distort+'/'+fname) 
         if distort == 'randomsilence5':
+            logger.info("Generating Random Silence 5s")
             for fname in os.listdir(distort):
                 generate_randomsilence5(distort+'/'+fname)
     os.chdir('..')         
 
 def make_test_data():
+    logger.info("Make test data")
     arr_features=[]
     os.chdir('genres')
     #genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
@@ -546,8 +639,8 @@ def make_test_data():
             arr_features.append(dict_features)
 
     df=pd.DataFrame(data=arr_features)
-    print(df.head())
-    print(df.shape)
+    logger.debug(df.head())
+    logger.debug(df.shape)
     os.chdir('..')
     df.to_csv('test_data.csv',index=False)
 
@@ -560,6 +653,12 @@ if __name__=='__main__':
     # Country = Discontinuity
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
+    logger = logging.getLogger('test')
+    logger.setLevel(logging.DEBUG)
+    # create file handler which logs even debug messages
+    fh = logging.FileHandler('test_log.log')
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
     make_distortion_data_all()
     make_train_data_column()
     make_test_data_column()
