@@ -76,7 +76,7 @@ def run_nn():
 
 
     #shape
-    x_train.shape,x_test.shape,y_train.shape,y_test.shape
+    print("tempo_dbg",    x_train.shape,x_test.shape,y_train.shape,y_test.shape)
 
 
     #import tensorflow as tf
@@ -106,7 +106,7 @@ def run_nn():
 
     #building the model
     #adding layers and forming the model
-    model.add(Conv2D(64,kernel_size=5,strides=1,padding="Same",activation="relu",input_shape=(36,5,1)))
+    model.add(Conv2D(64,kernel_size=5,strides=1,padding="Same",activation="relu",input_shape=(36,6,1)))
     model.add(MaxPooling2D(padding="same"))
 
     model.add(Conv2D(128,kernel_size=5,strides=1,padding="same",activation="relu"))
@@ -188,7 +188,13 @@ def run_nn():
 
 
 
-    preds = model.predict(x_test, batch_size=128, verbose=0)
+    print(x_test)
+    preds = model.predict(x_test, batch_size=128, verbose=1)
+    print(preds)
+    print('Predict the classes: ')
+    preds = model.predict(x_test[0:1], batch_size=128, verbose=0)
+    print('Predicted class: ', preds)
+    print('Real class:  ', y_test[0:1])
 
 
 

@@ -32,6 +32,8 @@ from dtw import dtw
 import soundfile
 from Audio_model_cnn_conv_limited import *
 
+from tensorflow.keras.models import Model,load_model
+
 def generate_discontinuity(audio_file):
 
     plt.rcParams["figure.figsize"] = (12, 9)
@@ -532,6 +534,92 @@ def make_test_data():
 
 
 
+#this function will check the content of folder test ( checks only files and ignores directories) and will just 
+def make_test_data_no_label():
+
+    # File path
+    filepath_model = './custom_cnn_2d.h5'
+
+    # Load the model
+    model = load_model(filepath_model, compile = True)
+
+    x_test=[]
+    y_test=[]
+    arr_features=[]
+    os.chdir('distort')
+    orig_path = "distort_orig/"
+    #             0             1           2           3       4       5       6           7               8             9
+    distort = 'randomsilence click_n_pop discontinuity hum white_noise2 hum2 oversampling undersampling saturated randomsilence5'.split()
+    
+    test_files = [f for f in os.listdir('test') if os.path.isfile(os.path.join('test', f))]
+    print("aaa", test_files)
+    #for fname in tqdm(os.listdir('test'),total=10*len(distort)):
+    for fname in test_files:
+        print('test/'+fname)
+        y, sr = librosa.load('test/'+fname, duration=30)
+        #y2, sr2 = librosa.load('../'+ orig_path + 'test/'+  fname, duration=30)
+        y2, sr2 = librosa.load('test/'+fname, duration=30)
+        mfccs = np.mean(librosa.feature.mfcc(y, sr, n_mfcc=36).T,axis=0)
+        mfccs2 = np.mean(librosa.feature.mfcc(y2, sr2, n_mfcc=36).T,axis=0)
+
+        mfccs_diff = mfccs2 - mfccs
+        #TODO when files are the same ( e.g. positive test result, and no distortion), then the diff vector will be null
+        # if ... mfccs_diff == 0
+        melspectrogram = np.mean(librosa.feature.melspectrogram(y=y, sr=sr, n_mels=36,fmax=8000).T,axis=0)
+        chroma_stft=np.mean(librosa.feature.chroma_stft(y=y, sr=sr,n_chroma=36).T,axis=0)
+        chroma_cq = np.mean(librosa.feature.chroma_cqt(y=y, sr=sr,n_chroma=36).T,axis=0)
+        chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr,n_chroma=36).T,axis=0)
+        features=np.reshape(np.vstack((mfccs,melspectrogram,chroma_stft,chroma_cq,chroma_cens, mfccs_diff)),(36,6))
+        x_test.append(features)
+        ##print("index", distort.index(fnamed.split('.')[0]))
+        y_test.append(0)
+        print("tempo_dbg",    features.shape)
+        # Convert into Numpy array
+        samples_to_predict = np.array(features)
+        # print(samples_to_predict.shape)
+        # samples_to_predict=np.reshape(samples_to_predict,(samples_to_predict.shape[0], 36,6))
+        # print(samples_to_predict.shape)
+
+        samples_to_predict=np.reshape(samples_to_predict,(1, 36,6,1))
+
+        # Generate predictions for samples
+        preds = model.predict(samples_to_predict, batch_size = 128, verbose= 1)
+        #predictions = model.predict(samples_to_predict, batch_size = 128, verbose= 1)
+        print("predictions orig", preds)
+        classes = np.argmax(preds, axis = 1)
+        print("classes orig", classes)
+
+        pred=np.zeros(10)
+        preds=np.array([preds[0,0],preds[0,1],preds[0,2],preds[0,3],preds[0,4],preds[0,5],preds[0,6], preds[0,7],preds[0,8],preds[0,9]])
+        pred=(preds+(3*pred))/4
+        print("predictions", pred)
+        # Generate arg maxes for predictions
+        #classes = np.argmax(predictions, axis = 1)
+        #print("classes", classes)
+        maximum = max(pred)
+        print("maximumt", maximum)
+        classes = np.where(pred == maximum)
+        print("classes after different", classes)
+        print("classes val after different", pred[classes])
+        classes = np.argmax(pred, axis=0)
+        print("classes afster", classes)
+
+
+
+        ##cnn
+    
+    
+    x_test=np.array(x_test)
+    y_test=np.array(y_test)
+
+    x_test_2d=np.reshape(x_test,(x_test.shape[0],x_test.shape[1]*x_test.shape[2]))
+    os.chdir('..')
+    np.savetxt("test_data_nolabel.csv",x_test_2d,delimiter=",")
+    np.savetxt("test_labels_nolabel.csv",y_test,delimiter=",")
+    
+
+
+
 if __name__=='__main__':
     #ToDo insert feature of introducing distortions
     #Blues = random silence
@@ -539,7 +627,8 @@ if __name__=='__main__':
     # Country = Discontinuity
     # Disco = Hum introduction
     # hiphop  = Inter-sample peaks 
-    make_distortion_data_all()
-    make_train_data_column()
-    make_test_data_column()
-    run_nn()
+    ##make_distortion_data_all()
+    #make_train_data_column()
+    #make_test_data_column()
+    #run_nn()
+    make_test_data_no_label()
